@@ -20,13 +20,17 @@ app.use(cors({
   credentials: true
 }));
 
-// Connect to MongoDB
-mongoose.connect(process.env.MONGO_URI)
-  .then(() => console.log('MongoDB connected successfully'))
-  .catch(err => {
-    console.error('MongoDB connection error:', err);
-    process.exit(1);
+// Health check route for Render
+app.get('/health', (req, res) => {
+  const dbState = mongoose.connection.readyState;
+  const dbStatus = dbState === 1 ? 'connected' : 'disconnected';
+  res.status(200).json({
+    success: true,
+    status: 'ok',
+    database: dbStatus,
+    timestamp: new Date().toISOString()
   });
+});
 
 // API Routes (must be before static files to avoid conflicts with public folders)
 app.use('/', authRoutes);
@@ -50,7 +54,26 @@ app.use((err, req, res, next) => {
   });
 });
 
+// Validate required env vars
+if (!process.env.MONGO_URI) {
+  console.error('ERROR: MONGO_URI environment variable is not set!');
+  console.error('Please set MONGO_URI in your Render Environment Variables.');
+}
+if (!process.env.JWT_SECRET) {
+  console.error('WARNING: JWT_SECRET environment variable is not set!');
+  console.error('Please set JWT_SECRET in your Render Environment Variables.');
+}
+
+// Connect to MongoDB
+mongoose.connect(process.env.MONGO_URI || '')
+  .then(() => console.log('MongoDB connected successfully'))
+  .catch(err => {
+    console.error('MongoDB connection error:', err.message);
+    console.error('Make sure MONGO_URI is set correctly in environment variables.');
+  });
+
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
+  console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
 });
 
