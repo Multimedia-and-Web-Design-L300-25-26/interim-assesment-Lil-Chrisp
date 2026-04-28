@@ -1,0 +1,10 @@
+[build]
+  publish = "public"
+
+# Optional: redirect all routes to index.html for SPA behavior
+# Uncomment the lines below if you ever switch to a single-page app with client-side routing
+# [[redirects]]
+#   from = "/*"
+#   to = "/index.html"
+#   status = 200
+

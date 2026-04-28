@@ -1,3 +1,4 @@
+
 require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
@@ -7,6 +8,7 @@ const path = require('path');
 
 const authRoutes = require('./routes/authRoutes');
 const cryptoRoutes = require('./routes/cryptoRoutes');
+const seedDatabase = require('./seed');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -15,19 +17,42 @@ const PORT = process.env.PORT || 5000;
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+// CORS configuration — allow Netlify frontend + local dev
+const allowedOrigins = [
+  'https://lil-chrisp-crypto-app.netlify.app',
+  'http://localhost:5000',
+  'http://localhost:3000'
+];
+
 app.use(cors({
-  origin: true,
+  origin: function (origin, callback) {
+    // allow requests with no origin (like mobile apps or curl)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true
 }));
 
 // Health check route for Render
-app.get('/health', (req, res) => {
+app.get('/health', async (req, res) => {
   const dbState = mongoose.connection.readyState;
   const dbStatus = dbState === 1 ? 'connected' : 'disconnected';
+  let cryptoCount = 0;
+  try {
+    const Crypto = require('./models/Crypto');
+    cryptoCount = await Crypto.countDocuments();
+  } catch (e) {
+    cryptoCount = -1;
+  }
   res.status(200).json({
     success: true,
     status: 'ok',
     database: dbStatus,
+    cryptoCount: cryptoCount,
     timestamp: new Date().toISOString()
   });
 });
@@ -66,7 +91,11 @@ if (!process.env.JWT_SECRET) {
 
 // Connect to MongoDB
 mongoose.connect(process.env.MONGO_URI || '')
-  .then(() => console.log('MongoDB connected successfully'))
+  .then(() => {
+    console.log('MongoDB connected successfully');
+    // Seed database with initial crypto data if empty
+    seedDatabase();
+  })
   .catch(err => {
     console.error('MongoDB connection error:', err.message);
     console.error('Make sure MONGO_URI is set correctly in environment variables.');

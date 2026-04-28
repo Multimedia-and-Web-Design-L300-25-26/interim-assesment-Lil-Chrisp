@@ -5,8 +5,7 @@ const User = require('../models/User');
 // Register a new user
 exports.register = async (req, res) => {
   try {
-    const data = req.body && Object.keys(req.body).length > 0 ? req.body : req.query || {};
-    const { name, email, password } = data;
+    const { name, email, password } = req.body;
 
     // Check if all fields are provided
     if (!name || !email || !password) {
@@ -73,8 +72,7 @@ exports.register = async (req, res) => {
 // Login user
 exports.login = async (req, res) => {
   try {
-    const data = req.body && Object.keys(req.body).length > 0 ? req.body : req.query || {};
-    const { email, password } = data;
+    const { email, password } = req.body;
 
     // Check if email and password are provided
     if (!email || !password) {

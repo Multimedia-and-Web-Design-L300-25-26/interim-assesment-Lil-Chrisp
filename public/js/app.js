@@ -1,11 +1,12 @@
-const API_BASE = window.location.origin;
+const API_BASE = window.BACKEND_URL || window.location.origin;
 
 // Helper function for API calls
 async function apiCall(url, method = 'GET', body = null) {
   const options = {
     method,
     headers: {},
-    credentials: 'include'
+    credentials: 'include',
+    mode: 'cors'
   };
 
   const token = localStorage.getItem('token');
@@ -26,9 +27,15 @@ async function apiCall(url, method = 'GET', body = null) {
 
   try {
     const response = await fetch(fullUrl, options);
+
+    if (!response.ok) {
+      console.error(`HTTP error ${response.status} for ${fullUrl}`);
+    }
+
     const data = await response.json();
     return data;
   } catch (error) {
+    console.error('API call failed:', error);
     return {
       success: false,
       message: 'Network error. Please try again.'
@@ -38,7 +45,7 @@ async function apiCall(url, method = 'GET', body = null) {
 
 // Register
 async function register(name, email, password) {
-  const result = await apiCall('/register', 'GET', { name, email, password });
+  const result = await apiCall('/register', 'POST', { name, email, password });
   if (result.success && result.token) {
     localStorage.setItem('token', result.token);
   }
@@ -47,7 +54,7 @@ async function register(name, email, password) {
 
 // Login
 async function login(email, password) {
-  const result = await apiCall('/login', 'GET', { email, password });
+  const result = await apiCall('/login', 'POST', { email, password });
   if (result.success && result.token) {
     localStorage.setItem('token', result.token);
   }
@@ -121,6 +128,33 @@ async function addCrypto(cryptoData) {
   return await apiCall('/crypto', 'POST', cryptoData);
 }
 
+// Inject student project warning banner on every page
+function injectWarningBanner() {
+  if (document.getElementById('student-banner')) return;
+  const banner = document.createElement('div');
+  banner.id = 'student-banner';
+  banner.className = 'student-banner';
+  banner.innerHTML = `
+    <div class="container banner-content">
+      <span class="banner-icon">🎓</span>
+      <span class="banner-text">This is a student project for educational purposes only. It is not affiliated with, endorsed by, or connected to Coinbase in any way.</span>
+    </div>
+  `;
+  document.body.insertBefore(banner, document.body.firstChild);
+}
+
+// Inject footer disclaimer on every page
+function injectFooterDisclaimer() {
+  const footers = document.querySelectorAll('.footer');
+  footers.forEach(footer => {
+    if (footer.querySelector('.footer-disclaimer')) return;
+    const disclaimer = document.createElement('p');
+    disclaimer.className = 'footer-disclaimer';
+    disclaimer.textContent = 'This is a demo project. Do not enter real personal information or financial data.';
+    footer.appendChild(disclaimer);
+  });
+}
+
 // Render crypto list
 function renderCryptoList(container, result) {
   if (!result.success || !result.data || result.data.length === 0) {
@@ -142,4 +176,10 @@ function renderCryptoList(container, result) {
     `;
   }).join('');
 }
+
+// Auto-inject banner and footer disclaimer on every page
+document.addEventListener('DOMContentLoaded', () => {
+  injectWarningBanner();
+  injectFooterDisclaimer();
+});
 

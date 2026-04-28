@@ -298,6 +298,29 @@ a {
   color: #6b7280;
 }
 
+/* Student Warning Banner */
+.student-banner {
+  background-color: #fef3c7;
+  border-bottom: 1px solid #f59e0b;
+  padding: 12px 0;
+  color: #92400e;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.banner-content {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: center;
+  text-align: center;
+}
+
+.banner-icon {
+  font-size: 1.25rem;
+  flex-shrink: 0;
+}
+
 /* Footer */
 .footer {
   background-color: #fff;
@@ -306,6 +329,26 @@ a {
   text-align: center;
   color: #6b7280;
   margin-top: 40px;
+}
+
+.footer-disclaimer {
+  margin-top: 8px;
+  font-size: 0.8rem;
+  color: #9ca3af;
+  font-style: italic;
+}
+
+/* Demo password warning */
+.demo-warning {
+  background-color: #fee2e2;
+  border: 1px solid #ef4444;
+  color: #991b1b;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 16px;
+  text-align: center;
 }
 
 /* Responsive */
