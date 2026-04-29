@@ -129,7 +129,7 @@ exports.getNewListings = async (req, res) => {
   }
 };
 
-// Add new cryptocurrency
+// Add new cryptocurrency (mock - returns success without DB)
 exports.addCrypto = async (req, res) => {
   try {
     const { name, symbol, price, image, change24h } = req.body;
@@ -142,27 +142,21 @@ exports.addCrypto = async (req, res) => {
       });
     }
 
-    // Check if crypto already exists
-    const existingCrypto = await Crypto.findOne({ symbol: symbol.toUpperCase() });
-    if (existingCrypto) {
-      return res.status(409).json({
-        success: false,
-        message: 'Cryptocurrency with this symbol already exists'
-      });
-    }
-
-    const crypto = await Crypto.create({
+    // Simulate new crypto with timestamp
+    const newCrypto = {
       name,
-      symbol,
+      symbol: symbol.toUpperCase(),
       price,
       image,
-      change24h
-    });
+      change24h,
+      _id: 'mock' + Date.now(),
+      createdAt: new Date()
+    };
 
     res.status(201).json({
       success: true,
-      message: 'Cryptocurrency added successfully',
-      data: crypto
+      message: 'Cryptocurrency added successfully (mock mode)',
+      data: newCrypto
     });
   } catch (error) {
     res.status(500).json({
