@@ -19,21 +19,16 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 // CORS configuration — allow Netlify frontend + local dev
 const allowedOrigins = [
+  '*',
   'https://lil-chrisp-crypto-app.netlify.app',
+  'https://relaxed-centaur-f1a3ce.netlify.app',
+  'https://*.netlify.app',
   'http://localhost:5000',
   'http://localhost:3000'
 ];
 
 app.use(cors({
-  origin: function (origin, callback) {
-    // allow requests with no origin (like mobile apps or curl)
-    if (!origin) return callback(null, true);
-    if (allowedOrigins.indexOf(origin) !== -1) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
+  origin: true,  // Allow all origins for Netlify + local
   credentials: true
 }));
 

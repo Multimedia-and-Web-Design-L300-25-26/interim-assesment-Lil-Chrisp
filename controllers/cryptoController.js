@@ -112,8 +112,7 @@ exports.getGainers = async (req, res) => {
 // Get new listings (sorted by createdAt newest to oldest)
 exports.getNewListings = async (req, res) => {
   try {
-    // Simulate 'new' by shuffling or fixed order
-    const newListings = seedData.slice().sort((a, b) => Math.random() - 0.5); // or fixed reverse
+    const newListings = seedData.slice().sort((a, b) => Math.random() - 0.5);
 
     res.status(200).json({
       success: true,
@@ -129,12 +128,11 @@ exports.getNewListings = async (req, res) => {
   }
 };
 
-// Add new cryptocurrency (mock - returns success without DB)
+// Add new cryptocurrency (mock)
 exports.addCrypto = async (req, res) => {
   try {
     const { name, symbol, price, image, change24h } = req.body;
 
-    // Validate required fields
     if (!name || !symbol || !price || !image || change24h === undefined) {
       return res.status(400).json({
         success: false,
@@ -142,7 +140,6 @@ exports.addCrypto = async (req, res) => {
       });
     }
 
-    // Simulate new crypto with timestamp
     const newCrypto = {
       name,
       symbol: symbol.toUpperCase(),
@@ -166,4 +163,3 @@ exports.addCrypto = async (req, res) => {
     });
   }
 };
-
