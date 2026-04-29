@@ -56,13 +56,11 @@ app.get('/health', async (req, res) => {
 app.use('/', authRoutes);
 app.use('/crypto', cryptoRoutes);
 
-// Static files (frontend) - after API routes so API endpoints take priority
-app.use(express.static(path.join(__dirname, 'public')));
-
-// Serve frontend pages
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
+// Backend API only - no frontend serving
+// app.use(express.static(path.join(__dirname, 'public')));
+// app.get('/', (req, res) => {
+//   res.sendFile(path.join(__dirname, 'public', 'index.html'));
+// });
 
 // Error handling middleware
 app.use((err, req, res, next) => {
