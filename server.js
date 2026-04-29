@@ -56,11 +56,17 @@ app.get('/health', async (req, res) => {
 app.use('/', authRoutes);
 app.use('/crypto', cryptoRoutes);
 
-// Backend API only - no frontend serving
-// app.use(express.static(path.join(__dirname, 'public')));
-// app.get('/', (req, res) => {
-//   res.sendFile(path.join(__dirname, 'public', 'index.html'));
-// });
+// Fullstack - API + frontend SPA routes
+app.use(express.static(path.join(__dirname, 'public')));
+app.get('/crypto/:page.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'crypto', req.params.page + '.html'));
+});
+app.get('/:page.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', req.params.page + '.html'));
+});
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
 
 // Error handling middleware
 app.use((err, req, res, next) => {
