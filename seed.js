@@ -76,15 +76,9 @@ const seedData = [
 async function seedDatabase() {
   try {
     const count = await Crypto.countDocuments();
-    if (count === 0) {
-      console.log('Database is empty. Seeding initial cryptocurrency data...');
-      await Crypto.insertMany(seedData);
-      console.log(`Successfully seeded ${seedData.length} cryptocurrencies.`);
-    } else {
-      console.log(`Database already contains ${count} cryptocurrencies. Skipping seed.`);
-    }
+    console.log(`Database contains ${count} cryptocurrencies. No auto-seeding.`);
   } catch (error) {
-    console.error('Error seeding database:', error.message);
+    console.error('Error checking database:', error.message);
   }
 }
 
