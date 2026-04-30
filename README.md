@@ -1,66 +1,223 @@
-[![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c493a6346c4f15d667ab976d596c.svg)](https://classroom.github.com/a/bMYWKvYv)
-# Interim Assessment: Full-Stack Integration – Coinbase Clone
+# Coinbase Clone - Full-Stack Cryptocurrency Platform
 
-In this assignment, you will integrate your cloned coinbase frontend with a backend API to build a functional cryptocurrency platform with authentication and dynamic data.
+A full-stack cryptocurrency platform built with Node.js, Express, MongoDB, and a React-like frontend that integrates with a RESTful API backend.
 
-You are required to implement the features using Node.js with MongoDB as the database. Create proper data models (schemas) and structure your project using best practices (models, routes, and controllers). All features must be exposed through RESTful APIs for the frontend to consume.
+## 🚀 Features
 
-## 1. Authentication System (JWT-Based)
+- **User Authentication** - Register, Login, Logout with JWT tokens
+- **Protected Profile Page** - View user dashboard (requires authentication)
+- **Crypto Data Display** - View all cryptocurrencies with live prices
+- **Top Gainers** - View cryptocurrencies with highest 24h price increase
+- **New Listings** - View most recently added cryptocurrencies
+- **Add New Crypto** - Create new cryptocurrency entries (admin feature)
 
-### Register (GET /register)
+## 🛠️ Tech Stack
 
-Create a user account using:
+- **Backend:** Node.js, Express.js, MongoDB (Mongoose)
+- **Authentication:** JWT (JSON Web Tokens), bcryptjs
+- **Frontend:** Vanilla HTML, CSS, JavaScript
+- **Deployment:** Render (backend), Netlify (frontend)
 
-- Name
-- Email
-- Password
+## 📁 Project Structure
 
-Send data to the backend API and ensure it is properly stored in the database. Also handle success and error responses appropriately, returning clear and meaningful feedback based on the outcome of each request.
+```
+├── controllers/          # Request handlers
+│   ├── authController.js # Auth logic (register, login, logout, profile)
+│   └── cryptoController.js
+├── middleware/           # Express middleware
+│   └── auth.js          # JWT authentication middleware
+├── models/               # Mongoose schemas
+│   ├── User.js          # User model (name, email, password)
+│   └── Crypto.js       # Crypto model (name, symbol, price, image, change24h)
+├── public/               # Frontend static files
+│   ├── index.html      # Home page
+│   ├── login.html    # Login page
+│   ├── register.html # Registration page
+│   ├── profile.html  # User profile (protected)
+│   ├── add-crypto.html
+│   ├── crypto/       # Crypto pages
+│   ├── css/         # Stylesheets
+│   └── js/          # JavaScript files
+├── routes/              # Express routes
+│   ├── authRoutes.js  # /register, /login, /logout, /profile
+│   └── cryptoRoutes.js # /crypto, /crypto/gainers, /crypto/new
+├── server.js           # Express server entry point
+├── seed.js           # Database seeding
+├── package.json     # Dependencies
+├── Procfile         # Render deployment
+├── render.yaml     # Render config
+└── netlify.toml   # Netlify config
+```
 
-### Login (GET /login)
+## 🔧 Environment Variables
 
-Authenticate users using email and password, store the returned JWT token securely (preferably using HTTP-only cookies), and redirect the user to the homepage after a successful login.
+Create a `.env` file in the root directory:
 
-## 2. Protected User Profile Page
+```env
+MONGO_URI=your_mongodb_connection_string
+JWT_SECRET=your_secure_jwt_secret_key
+PORT=5000
+NODE_ENV=production
+```
 
-### Create a User Dashboard/Profile Page(GET /profile)
+## 📦 Installation
 
-Fetch and display:
+```bash
+# Install dependencies
+npm install
 
-- User name
-- Email
-- Any other relevant info from backend
+# Start the server
+npm start
+```
 
-**NOTE:** This page must be protected and only accessible to authenticated users with a valid JWT token. If the user is not authenticated, they should be redirected to the login page.
+The server runs on `http://localhost:5000`.
 
-## 3. Crypto Data Integration
+## 🔌 API Endpoints
 
-### GET /crypto (All Tradable Cryptocurrencies)
+### Authentication
 
-Fetch all available cryptocurrencies from the backend and display them on the frontend.
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/register` | Register a new user |
+| POST | `/login` | Login user |
+| GET | `/logout` | Logout user |
+| GET | `/profile` | Get user profile (protected) |
 
-### GET /crypto/gainers (Top Gainers)
+### Cryptocurrencies
 
-Fetch cryptocurrencies with the highest percentage increase in price, sorted from highest to lowest.
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/crypto` | Get all cryptocurrencies |
+| GET | `/crypto/gainers` | Get top gainers (sorted by 24h change) |
+| GET | `/crypto/new` | Get new listings (sorted by date) |
+| POST | `/crypto` | Add new cryptocurrency |
 
-### GET /crypto/new (New Listings)
+### Health Check
 
-Fetch the most recently added cryptocurrencies, sorted from newest to oldest.
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/health` | API health status |
 
-### POST /crypto (Add New Cryptocurrency)
+## 🔐 API Request/Response Examples
 
-Create a new cryptocurrency using:
+### Register User
+```bash
+POST /register
+Content-Type: application/json
 
-- Name
-- Symbol
-- Price
-- Image
-- 24h Change (percentage change in price over the last 24 hours, e.g. +2.5)
+{
+  "name": "John Doe",
+  "email": "john@example.com",
+  "password": "password123"
+}
 
-Send data to the backend API and ensure it is properly stored in the database (MongoDB). Also handle success and error responses appropriately, returning clear and meaningful feedback based on the outcome of each request.
+Response (201):
+{
+  "success": true,
+  "message": "User registered successfully",
+  "token": "eyJhbGciOiJIUzI1...",
+  "data": {
+    "id": "...",
+    "name": "John Doe",
+    "email": "john@example.com"
+  }
+}
+```
 
----
+### Login User
+```bash
+POST /login
+Content-Type: application/json
 
-Push your backend code to GitHub Classroom, deploy the backend (recommended: Render), and integrate it into your Coinbase clone frontend repository. After completing the integration, deploy the updated frontend as well. Finally, submit the links to your deployed backend, deployed frontend, and your updated Coinbase clone repository via the Google Form attached.
+{
+  "email": "john@example.com",
+  "password": "password123"
+}
 
-**NOTE:** Ensure that all submitted links are accurate and working, as no marks will be awarded for invalid or inaccessible submissions.
+Response (200):
+{
+  "success": true,
+  "message": "Login successful",
+  "token": "eyJhbGciOiJIUzI1...",
+  "data": {
+    "id": "...",
+    "name": "John Doe",
+    "email": "john@example.com"
+  }
+}
+```
+
+### Get All Crypto
+```bash
+GET /crypto
+
+Response (200):
+{
+  "success": true,
+  "count": 10,
+  "data": [
+    {
+      "_id": "...",
+      "name": "Bitcoin",
+      "symbol": "BTC",
+      "price": 67540.23,
+      "image": "https://...",
+      "change24h": 2.45,
+      "createdAt": "..."
+    },
+    ...
+  ]
+}
+```
+
+### Add Crypto (Protected)
+```bash
+POST /crypto
+Authorization: Bearer <jwt_token>
+Content-Type: application/json
+
+{
+  "name": "Dogecoin",
+  "symbol": "DOGE",
+  "price": 0.15,
+  "image": "https://...",
+  "change24h": 5.2
+}
+
+Response (201):
+{
+  "success": true,
+  "message": "Cryptocurrency added successfully",
+  "data": {
+    "_id": "...",
+    "name": "Dogecoin",
+    "symbol": "DOGE",
+    "price": 0.15,
+    "image": "https://...",
+    "change24h": 5.2,
+    "createdAt": "..."
+  }
+}
+```
+
+## 🚢 Deployment
+
+### Backend (Render)
+
+1. Create a new Web Service on [Render](https://render.com/)
+2. Connect your GitHub repository
+3. Set environment variables:
+   - `MONGO_URI`: Your MongoDB connection string
+   - `JWT_SECRET`: A secure secret key
+4. Deploy command: `npm start`
+5. Build command: `npm install`
+
+### Frontend (Netlify)
+
+1. Create a new site on [Netlify](https://netlify.com/)
+2. Drag and drop the `public/` folder, or connect to GitHub
+3. Update `public/js/config.js` with your Render backend URL
+
+## 📄 License
+
+ISC
